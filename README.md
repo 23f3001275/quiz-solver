@@ -16,9 +16,22 @@ Designed for the "TDS LLM Analysis" assignment.
 ## Quickstart (local)
 1. Clone repo
 2. Create virtualenv & activate
-3. `pip install -r requirements.txt`
-4. `playwright install`
-5. Set environment variables:
+`pip install -r requirements.txt`
+`playwright install`
+3. Set environment variables:
    - `EXPECTED_SECRET=your_secret`
    - Optionally `HOST=0.0.0.0` and `PORT=8000`
-6. Start server:
+4. Start server:
+   `uvicorn src.app.main:app --host 0.0.0.0 --port 8000`
+5. Test with demo:
+`curl -X POST https://<your-host>/api/v1/quiz
+-H "Content-Type: application/json"
+-d '{"email":"you@example.com
+","secret":"<your_secret>","url":"https://tds-llm-analysis.s-anand.net/demo"}
+'`
+
+## File layout
+See `docs/architecture.md` for design, API and viva notes.
+
+## License
+MIT
