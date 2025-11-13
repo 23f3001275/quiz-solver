@@ -1,0 +1,23 @@
+# src/app/api/v1.py
+import asyncio
+from fastapi import APIRouter, HTTPException, Request, BackgroundTasks
+from pydantic import BaseModel, HttpUrl
+from ..config import settings
+from ..solver.manager import solve_quiz_background
+
+router = APIRouter()
+
+class QuizRequest(BaseModel):
+    email: str
+    secret: str
+    url: HttpUrl
+
+@router.post("/quiz", status_code=200)
+async def receive_quiz(payload: QuizRequest, background_tasks: BackgroundTasks):
+    # Validate secret
+    if payload.secret != settings.EXPECTED_SECRET:
+        raise HTTPException(status_code=403, detail="Invalid secret")
+    # Accept and spawn background solver (must finish within 3 minutes)
+    # We add a background task to create an asyncio task that runs the solver loop.
+    background_tasks.add_task(solve_quiz_background, payload.email, payload.secret, str(payload.url))
+    return {"status": "accepted", "message": "Solver started"}
